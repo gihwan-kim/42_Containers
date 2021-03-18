@@ -1,2 +1,2 @@
 # 42_Containers
-C++ containers, easy mode
+- 표준 라이브러리에 있는 컨테이너를 직접 구현해보았습니다.
