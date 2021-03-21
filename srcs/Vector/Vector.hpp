@@ -6,16 +6,17 @@
 /*   By: gihwan-kim <kgh06079@gmail.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/06 16:07:53 by gihwan-kim        #+#    #+#             */
-/*   Updated: 2021/03/18 21:52:58 by gihwan-kim       ###   ########.fr       */
+/*   Updated: 2021/03/19 00:15:12 by gihwan-kim       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "../utils/iterator.hpp"
 #include <memory>
 
 namespace ft
 {
 	template <class T>
-	class RandomVectorIterator
+	class random_iterator_vector
 	{
 	public:
 /*
@@ -29,37 +30,38 @@ namespace ft
 
 
 		/* Is default-constructible, copy-constructible, copy-assignable and destructible */
-		RandomVectorIterator();
-		RandomVectorIterator(RandomVectorIterator &_object);
-		RandomVectorIterator &operator=(RandomVectorIterator &_object);
-		~RandomVectorIterator();
+		random_iterator_vector();
+		random_iterator_vector(random_iterator_vector &_object);
+		random_iterator_vector &operator=(random_iterator_vector &_object);
+		~random_iterator_vector();
 
 		/* Can be compared for equivalence using the equality/inequality operators */
-		bool	operator==(RandomVectorIterator &_object);
-		bool	operator!=(RandomVectorIterator &_object);
+		bool	operator==(random_iterator_vector &_object);
+		bool	operator!=(random_iterator_vector &_object);
 
-		const reference		operator*() { return (*iter); }
-		reference			operator*() { return (*iter); }
-		reference			operator->() { return (iter); }
-		const reference		operator->() { return (iter); }
+		const reference		operator*() { return (*m_iter); }
+		reference			operator*() { return (*m_iter); }
+		reference			operator->() { return (m_iter); }
+		const reference		operator->() { return (m_iter); }
 
-		RandomVectorIterator	operator++(int) { iter++; return (*this); } // ++i
-		RandomVectorIterator	&operator++()
+		random_iterator_vector	operator++(int) { m_iter++; return (*this); } 	// ++i
+		random_iterator_vector	&operator++()									// i++
 		{
-			RandomVectorIterator oldVecIter(*this);
-			iter++; return (*this);
-		}	// i++
-		RandomVectorIterator	operator--(int)
-		{
-			
+			random_iterator_vector oldVecIter(*this);
+			m_iter++;
+			return (*this);
 		}
-		RandomVectorIterator	&operator--();
-
-		/* incremented */
+		random_iterator_vector	operator--(int) { m_iter--; return (*this); }
+		random_iterator_vector	&operator--()
+		{
+			random_iterator_vector	tmp = *this;
+			m_iter--;
+			return (*this);
+		}
 
 	private:
 		/* data */
-		pointer	iter;
+		pointer	m_iter;
 	};
 
 	template <class T, class Allocator = std::allocator<T>>
@@ -72,7 +74,7 @@ namespace ft
 ** 		========  Member types ========
 ** 		===============================
 */
-		typedef T value_type;											  // The first template parameter (T)
+		typedef T	value_type;											  // The first template parameter (T)
 		typedef Allocator allocator_type;								  // The second template parameter (Alloc)
 																		  // defaults to: allocator<value_type>
 		typedef typename allocator_type::reference reference;			  // for the default allocator: value_type&
@@ -80,53 +82,56 @@ namespace ft
 		typedef typename allocator_type::pointer pointer;				  // for the default allocator: value_type*
 		typedef typename allocator_type::const_pointer const_pointer;	  // for the default allocator: const value_type*
 
-		// typedef typename iterator	a random access iterator to value_type	convertible to const_iterator
-		typedef RandomVectorIterator<value_type> iterator;
+		typedef random_iterator_vector<value_type> iterator;
+		typedef random_iterator_vector<value_type> const_iterator;
 		// typedef typename const_iterator	a random access iterator to const value_type
 		// typedef typename reverse_iterator	reverse_iterator<iterator>
 		// typedef typename const_reverse_iterator	reverse_iterator<const_iterator>
 
-		// typedef typename difference_type	a signed integral type, identical to: iterator_traits<iterator>::difference_type	usually the same as ptrdiff_t
+		typedef typename ft::iterator_traits<iterator>::difference_type difference_type;	// a signed integral type, identical to: 	usually the same as ptrdiff_t
 		typedef size_t size_type; //	an unsigned integral type that can represent any non-negative value of difference_type	usually the same as size_t
 
 
 	private:
 		/* data */
-		allocator_type _alloc;
-		pointer _data;
+		allocator_type m_alloc;
+		pointer m_data;
+		pointer m_start;
+		pointer m_end;
+		pointer m_end_of_storage;
 
 	protected:
 		// allocate : throw bad_alloc 처리 해줘야함
 		template <class Size, class T1>
 		void fill_initialize(Size n, const T1 &x)
 		{
-			for ()
+			// allocate memory
+			m_data = m_alloc.allocate(n);
+			for (n--)
 			{
-				// allocate memory
-				_data = std::allocator::allocate(n);
 				// construct object
-				std::allocator::construct(ptr, x);
-
+				m_alloc.construct(ptr, x);
 			}
 		}
-    // new (static_cast<void*>(&*first))
-    //   typename iterator_traits<ForwardIterator>::value_type(x);
-    // new (static_cast<void*>(&*result))
-    //   typename iterator_traits<ForwardIterator>::value_type(*first);
-		template <class InputIterator, class Size, class T1>
-		void range_initialize(InputIterator first, InputIterator last)
+
+		template <class Size, class InputIterator>
+		void range_initialize(Size n, InputIterator first)
 		{
 			// allocate memory
-			const size_type	n = ft::distance(first, last);
-			pointer	tmp = _data;
-			while (first != last)
+			m_data = m_alloc.allocate(n);
+			for (n--)
 			{
 				// construct object
-				_data = std::allocator::allocate(n);
-				std::allocator::construct(tmp, *first);
-				tmp++;
+				m_alloc.construct(ptr, *first);
+				first++;
 			}
 		}
+
+		void copy_initialize(const Vector &x)
+		{
+			insert(this->begin(), x.begin(), x.end());
+		}
+
 
 	public:
 /*
@@ -140,7 +145,7 @@ namespace ft
 		**	Constructs an empty container, with no elements.
 		*/
 		explicit Vector(const allocator_type &alloc = allocator_type())
-			: _alloc(alloc), _data(nullptr)
+			: m_alloc(alloc), m_data(nullptr)
 		{}
 
 		/*
@@ -150,9 +155,9 @@ namespace ft
 		*/
 		explicit Vector(size_type n, const value_type &val = value_type(),
 						const allocator_type &alloc = allocator_type())
-			: _alloc(alloc), _data(_alloc.allcate(n))
+			: m_alloc(alloc), m_data(this->m_alloc.allcate(n))
 		{
-			initialize(n, val);
+			fill_initialize(n, val);
 		}
 
 		/*
@@ -165,7 +170,8 @@ namespace ft
 		Vector(InputIterator first, InputIterator last,
 			   const allocator_type &alloc = allocator_type())
 		{
-			initialize(first, last, alloc);
+			difference_type n = ft::distance(first, last);
+			range_initialize(n, first);
 		}
 
 		/*
@@ -173,30 +179,73 @@ namespace ft
 		** 	Constructs a container with a copy of each of the elements in x,
 		** 	in the same order.
 		*/
-		Vector(const Vector &x);
+		Vector(const Vector &x)
+		{
+			copy_initialize(x);
+		}
 
 		/* destructor */
-		// ~Vector();
+		~Vector();
 		// vector &operator=(const vector &x);
+/*
+** 		===============================
+** 		========= ITERATOR =========
+** 		===============================
+*/
+		iterator begin() { return (iteratr(this->m_start)); }
+		const_iterator begin() const { return (const_iterator(this->m_start)); }
 
-		// /* iterator */
-		// iterator begin();
-		// const_iterator begin() const;
-		// iterator end();
-		// const_iterator end() const;
-		// reverse_iterator rbegin();
-		// const_reverse_iterator rbegin() const;
-		// reverse_iterator rend();
-		// const_reverse_iterator rend() const;
+		iterator end() { return (iterator(this->m_end)); }
+		const_iterator end() const { return (const_iterator(this->m_end)); }
 
-		// /* Capacity */
-		// bool empty() const;
-		// size_type size() const;
-		// size_type max_size() const;
-		// size_type capacity() const;
-		// void resize(size_type sz);
-		// void resize(size_type n, value_type val = value_type());
-		// void reserve(size_type n);
+		reverse_iterator rbegin() { return (reverse_iterator(this->m_end)); }
+		const_reverse_iterator rbegin() const { return (const_reverse_iterator(this->m_end)); }
+		
+		reverse_iterator rend() { return (reverse_iterator(this->m_start)); }
+		const_reverse_iterator rend() const {  return (reverse_iterator(this->m_start)); }
+
+
+/*
+** 		===============================
+** 		========= CAPACITY =========
+** 		===============================
+*/
+
+		bool empty() const
+		{
+
+		}
+		
+		size_type size() const
+		{
+
+		}
+		
+		size_type max_size() const
+		{
+
+		}
+		
+		size_type capacity() const
+		{
+
+		}
+		
+		void resize(size_type sz)
+		{
+
+		}
+		
+		void resize(size_type n, value_type val = value_type())
+		{
+
+		}
+		
+		void reserve(size_type n)
+		{
+
+		}
+		
 
 		// /* element access */
 		// reference operator[](size_type n);
@@ -225,7 +274,7 @@ namespace ft
 
 		// pointer getData()
 		// {
-		// 	return _data;
+		// 	return m_data;
 		// }
 
 	};

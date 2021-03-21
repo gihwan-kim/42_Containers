@@ -42,6 +42,9 @@ hint : 0 or value
 - throw 'bad_alloc'
     > 요청한 총 용량만큼 할당이 안될경우
 
+
+
+
 ### std::allocator<T>::construct
 
 > public member function

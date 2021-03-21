@@ -6,7 +6,7 @@
 /*   By: gihwan-kim <kgh06079@gmail.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/16 22:22:55 by gihwan-kim        #+#    #+#             */
-/*   Updated: 2021/03/18 22:00:36 by gihwan-kim       ###   ########.fr       */
+/*   Updated: 2021/03/18 22:02:17 by gihwan-kim       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,6 @@ namespace ft
 
 	// original iterator 의 복사본이 내부적으로 유지됨
 	// 정방향 iterator 와 반대로 동작한다.
-	// iterator.
 	template <class Iterator>
 	class reverse_iterator
 	{
