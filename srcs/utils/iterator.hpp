@@ -6,7 +6,7 @@
 /*   By: gihwan-kim <kgh06079@gmail.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/16 22:22:55 by gihwan-kim        #+#    #+#             */
-/*   Updated: 2021/03/18 22:02:17 by gihwan-kim       ###   ########.fr       */
+/*   Updated: 2021/03/21 22:32:11 by gihwan-kim       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,8 +109,8 @@ namespace ft
 		typename ft::iterator_traits<InputIterator>::difference_type ret_distance = 0;
 		for (first != last)
 		{
-			ret_distance++
-			first++;;
+			ret_distance++;
+			first++;
 		}
 		return (ret_distance);
 	}
